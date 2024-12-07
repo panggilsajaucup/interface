@@ -1,16 +1,13 @@
 import streamlit as st
 import pandas as pd
 
-# Fungsi untuk memproses data dari PKPA
+# Fungsi untuk memproses sheet bernama "Rekap"
 def process_sheet_rekap(file):
     try:
-        # Menentukan engine berdasarkan ekstensi file
-        engine = "xlrd" if file.name.endswith(".xls") else "openpyxl"
-
-        # Membaca sheet bernama "Rekap"
-        excel_file = pd.ExcelFile(file, engine=engine)
+        # Membaca sheet bernama "Rekap" dengan engine 'openpyxl'
+        excel_file = pd.ExcelFile(file, engine='openpyxl')
         if "Rekap" in excel_file.sheet_names:
-            df = pd.read_excel(file, sheet_name="Rekap", usecols="C,D,E,T,AC", skiprows=1, engine=engine)
+            df = pd.read_excel(file, sheet_name="Rekap", usecols="C,D,E,T,AC", skiprows=1, engine='openpyxl')
             df.columns = ["Kode Progdi", "nim", "nama", "pekerjaan", "ketereratan"]
             df = df.dropna()  # Menghapus baris dengan missing values
             df = df[~df['Kode Progdi'].isin(['01', '02', '03'])]  # Menghapus kode tertentu
@@ -23,17 +20,14 @@ def process_sheet_rekap(file):
         st.error(f"Error saat memproses file PKPA: {e}")
         return None
 
-# Fungsi untuk memproses data dari BAAK
+# Fungsi untuk memproses semua sheet dalam file BAAK
 def process_all_sheets_baak(file):
     try:
-        # Menentukan engine berdasarkan ekstensi file
-        engine = "xlrd" if file.name.endswith(".xls") else "openpyxl"
-
-        # Membaca semua sheet
-        excel_file = pd.ExcelFile(file, engine=engine)
+        # Membaca semua sheet dari file menggunakan engine 'openpyxl'
+        excel_file = pd.ExcelFile(file, engine='openpyxl')
         processed_sheets = []
         for sheet in excel_file.sheet_names:
-            df = pd.read_excel(file, sheet_name=sheet, usecols="B,C,E,F", skiprows=1, engine=engine)
+            df = pd.read_excel(file, sheet_name=sheet, usecols="B,C,E,F", skiprows=1, engine='openpyxl')
             df.columns = ["nim", "nama", "ipk", "lama studi"]
             df = df.dropna()  # Menghapus missing values
             df = df[~df['nim'].apply(lambda x: str(x)[4:6] in ['01', '02', '03'])]  # Validasi 'nim'
